@@ -1,15 +1,16 @@
-import React, {useState, createContext} from 'react';
-import {getAuth} from 'firebase/auth';
-import {loginRequest} from './Authentication';
+import React, { useState, createContext } from "react";
+import { getAuth } from "firebase/auth";
+import { loginRequest } from "./Authenticate";
+import { auth } from "../../firebase";
 
 export const AuthenticationContext = createContext();
 
-export const AuthenticationContextProvider = ({children}) => {
+export const AuthenticationContextProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [user, setUser] = useState(null);
   const [error, setError] = useState(null);
 
-  getAuth().onAuthStateChanged(usr => {
+  getAuth().onAuthStateChanged((usr) => {
     if (usr) {
       setUser(usr);
       setIsLoading(false);
@@ -21,11 +22,11 @@ export const AuthenticationContextProvider = ({children}) => {
   const onLogin = (email, password) => {
     setIsLoading(true);
     loginRequest(email, password)
-      .then(u => {
+      .then((u) => {
         setUser(u);
         setIsLoading(false);
       })
-      .catch(e => {
+      .catch((e) => {
         setIsLoading(false);
         setError(e.toString());
       });
@@ -34,17 +35,17 @@ export const AuthenticationContextProvider = ({children}) => {
   const onRegister = (email, password, repeatedPassword) => {
     setIsLoading(true);
     if (password !== repeatedPassword) {
-      setError('Error: Passwords do not match');
+      setError("Error: Passwords do not match");
       return;
     }
 
     getAuth()
       .createUserWithEmailAndPassword(email, password)
-      .then(u => {
+      .then((u) => {
         setUser(u);
         setIsLoading(false);
       })
-      .catch(e => {
+      .catch((e) => {
         setIsLoading(false);
         setError(e.toString());
       });
@@ -69,7 +70,8 @@ export const AuthenticationContextProvider = ({children}) => {
         onLogin,
         onRegister,
         onLogout,
-      }}>
+      }}
+    >
       {children}
     </AuthenticationContext.Provider>
   );
